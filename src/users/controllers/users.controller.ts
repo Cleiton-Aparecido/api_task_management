@@ -1,20 +1,19 @@
 import {
-  Controller,
-  Post,
   Body,
+  Controller,
+  Get,
   HttpCode,
   HttpStatus,
-  Get,
-  Req,
-  Patch,
-  ParseUUIDPipe,
   Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Req,
 } from '@nestjs/common';
-import { UsersService } from '../services/users.service';
-import { CreateUserDto } from '../dto/create-user.dto';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Public } from 'src/auth/decorators/public.decorator';
 import { ChangePasswordDto } from '../dto/change-password.dto';
+import { CreateUserDto } from '../dto/create-user.dto';
 import { UsersUseCase } from '../services/users.usecase';
 type AuthRequest = Request & {
   user?: { id: string; email: string; name?: string };
@@ -65,6 +64,9 @@ export class UsersController {
   }
 
   @Get()
+  @ApiOperation({
+    summary: 'Consultar informações do usuário autenticado',
+  })
   @ApiResponse({
     status: 200,
     description: 'Consultar informações do usuário autenticado',
@@ -96,6 +98,7 @@ export class UsersController {
     const safeUser = await this.usersService.get(userId);
     return safeUser;
   }
+
   @Patch(':id/password')
   @ApiResponse({
     status: 400,
