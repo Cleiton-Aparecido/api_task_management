@@ -1,9 +1,9 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { AuthDto } from '../dto/auth.dto';
-import { UsersRepository } from 'src/users/repository/users.repository';
+import * as bcrypt from 'bcrypt';
 import { IUsersRepository } from 'src/users/interfaces/users.repository.interface';
+import { UsersRepository } from 'src/users/repository/users.repository';
+import { AuthDto } from '../dto/auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -31,13 +31,17 @@ export class AuthService {
         throw new UnauthorizedException('Usuário ou senha inválidos');
       }
 
+      const isAdmin = user.permissions.some((p) => p === 'ADMIN');
+
       const payload = {
         name: user.name,
         email: user.email,
         id: user.id,
+        admin: isAdmin,
       };
+      console.log(payload);
       return {
-        access_token: this.jwtService.sign(payload, { expiresIn: '10h' }),
+        access_token: this.jwtService.sign(payload, { expiresIn: '3h' }),
       };
     } catch (error) {
       throw new UnauthorizedException(error.message);

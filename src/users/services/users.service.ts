@@ -5,22 +5,25 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { UsersRepository } from '../repository/users.repository';
 import * as bcrypt from 'bcrypt';
-import { CreateUserDto } from '../dto/create-user.dto';
-import { UsersUseCase } from './users.usecase';
-import { IUsersRepository } from '../interfaces/users.repository.interface';
+import { PermissionUseCase } from 'src/permission/service/permission.usecase';
 import { ChangePasswordDto } from '../dto/change-password.dto';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { IUsersRepository } from '../interfaces/users.repository.interface';
+import { UsersUseCase } from './users.usecase';
 
 @Injectable()
 export class UsersService implements UsersUseCase {
-  constructor(private readonly usersRepository: IUsersRepository) {}
+  constructor(
+    private readonly usersRepository: IUsersRepository,
+    private readonly permissionService: PermissionUseCase,
+  ) {}
 
   async create(
     createUserDto: CreateUserDto,
   ): Promise<{ statusCode: number; message: string }> {
     try {
-      const { email, name, password } = createUserDto;
+      const { email, name, password, admin } = createUserDto;
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -34,7 +37,9 @@ export class UsersService implements UsersUseCase {
         name,
         password: hashedPassword,
       });
-      await this.usersRepository.save(userCreated);
+      const user = await this.usersRepository.save(userCreated);
+
+      this.permissionService.createAdmin(user.id, admin);
 
       return {
         statusCode: 201,

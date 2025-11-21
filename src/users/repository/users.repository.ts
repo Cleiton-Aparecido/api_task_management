@@ -29,23 +29,53 @@ export class UsersRepository implements IUsersRepository {
     return where as FindOptionsWhere<User>;
   }
 
-  async findOne(partial: Partial<User>): Promise<User | null> {
+  async findOne(partial: Partial<User>): Promise<any> {
     const where = this.buildWhere(partial);
-    return this.userRepository.findOne({ where });
+    const user = await this.userRepository.findOne({
+      where,
+      relations: {
+        usersPermissions: {
+          permission: true,
+        },
+      },
+    });
+
+    if (!user) return null;
+
+    const permissions = user.usersPermissions.map((up) => up.permission.name);
+
+    return {
+      ...user,
+      permissions,
+    };
   }
 
   async save(user: DeepPartial<User>): Promise<User> {
-    return this.userRepository.save(user);
+    return await this.userRepository.save(user);
   }
 
   create(data: DeepPartial<User>): User {
     return this.userRepository.create(data);
   }
 
-  async findActiveById(id: string): Promise<User | null> {
-    return this.userRepository.findOne({
+  async findActiveById(id: string): Promise<any> {
+    const user = await this.userRepository.findOne({
       where: { id, deletedAt: IsNull() },
+      relations: {
+        usersPermissions: {
+          permission: true,
+        },
+      },
     });
+
+    if (!user) return null;
+
+    const permissions = user.usersPermissions.map((up) => up.permission.name);
+
+    return {
+      ...user,
+      permissions,
+    };
   }
 
   async findByEmail(email: string): Promise<User | null> {
@@ -54,24 +84,21 @@ export class UsersRepository implements IUsersRepository {
     });
   }
 
-  // 🔽 inclui o password mesmo que esteja com select: false no entity
   async findActiveByIdWithPassword(id: string): Promise<User | null> {
     return this.userRepository
       .createQueryBuilder('user')
-      .addSelect('user.password') // funciona se @Column({ select: false })
+      .addSelect('user.password')
       .where('user.id = :id', { id })
       .andWhere('user.deletedAt IS NULL')
       .getOne();
   }
 
-  // 🔽 atualiza somente o hash da senha
   async updatePassword(id: string, passwordHash: string): Promise<void> {
     const res = await this.userRepository.update(
       { id, deletedAt: IsNull() },
       { password: passwordHash },
     );
     if (!res.affected) {
-      // opcional: lançar erro se não achou usuário ativo
       throw new Error('Usuário não encontrado ou inativo');
     }
   }

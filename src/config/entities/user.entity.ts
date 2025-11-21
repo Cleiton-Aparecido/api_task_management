@@ -1,14 +1,14 @@
 import {
-  Entity,
   Column,
-  PrimaryColumn,
-  OneToMany,
   CreateDateColumn,
-  UpdateDateColumn,
   DeleteDateColumn,
+  Entity,
   Index,
+  OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
+import { UserPermission } from './user-permission.entity';
 
 @Entity({ name: 'users' })
 @Index('UQ_users_email', ['email'], { unique: true })
@@ -42,4 +42,7 @@ export class User {
 
   @DeleteDateColumn({ type: 'timestamp', name: 'deletedAt', nullable: true })
   deletedAt: Date | null;
+
+  @OneToMany(() => UserPermission, (up) => up.user)
+  usersPermissions: UserPermission[];
 }

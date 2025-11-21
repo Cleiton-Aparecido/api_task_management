@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
 
-import { AuthModule } from './auth/auth.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { TypeOrmConfigService } from './config/typeorm.config';
 import { ConfigModule } from '@nestjs/config';
-import { UsersModule } from './users/users.module';
-import { UsersUseCase } from './users/services/users.usecase';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModule } from './auth/auth.module';
+import { TypeOrmConfigService } from './config/typeorm.config';
+import { PermissionModule } from './permission/permission.module';
 import { UsersService } from './users/services/users.service';
+import { UsersUseCase } from './users/services/users.usecase';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { UsersService } from './users/services/users.service';
     }),
     AuthModule,
     UsersModule,
+    PermissionModule,
   ],
   providers: [
     {
