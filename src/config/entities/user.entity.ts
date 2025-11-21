@@ -9,6 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { UserPermission } from './user-permission.entity';
+import { Task } from './task.entity';
 
 @Entity({ name: 'users' })
 @Index('UQ_users_email', ['email'], { unique: true })
@@ -45,4 +46,7 @@ export class User {
 
   @OneToMany(() => UserPermission, (up) => up.user)
   usersPermissions: UserPermission[];
+
+  @OneToMany(() => Task, (task) => task.user)
+  tasks: Task[];
 }

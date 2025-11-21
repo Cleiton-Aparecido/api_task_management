@@ -46,7 +46,6 @@ export class UsersController {
   })
   @HttpCode(HttpStatus.CREATED)
   async register(@Body() data: CreateUserDto) {
-    console.log(data);
     return await this.usersService.create(data);
   }
 

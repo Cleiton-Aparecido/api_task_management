@@ -8,9 +8,11 @@ import {
   DeleteDateColumn,
   Unique,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { User } from './user.entity';
 import { Permission } from './permissions.entity';
+import { Task } from './task.entity';
 
 @Entity('users_permissions')
 @Unique('IDX_USER_PERMISSION_UNIQUE', ['userId', 'permissionId'])
