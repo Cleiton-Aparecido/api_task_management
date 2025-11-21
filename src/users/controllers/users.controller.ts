@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   Get,
   HttpCode,
   HttpStatus,
@@ -15,8 +16,9 @@ import { Public } from 'src/auth/decorators/public.decorator';
 import { ChangePasswordDto } from '../dto/change-password.dto';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UsersUseCase } from '../services/users.usecase';
+import { Admin } from 'typeorm';
 type AuthRequest = Request & {
-  user?: { id: string; email: string; name?: string };
+  user?: { id: string; email: string; name?: string; admin?: boolean };
 };
 
 @ApiTags('Users')
@@ -29,20 +31,10 @@ export class UsersController {
   @ApiOperation({
     summary: 'cadastrar usuários',
   })
-  @ApiBody({
-    description: 'Cadastrar novo usuário, e email não deve ser duplicado',
-    type: CreateUserDto,
-    examples: {
-      exemplo: {
-        summary: 'exemplo de dados para cadastro de usuário',
-        value: {
-          email: 'user@email.com',
-          name: 'user',
-          password: '123456',
-        },
-      },
-    },
-  })
+  // @ApiBody({
+  //   description: 'Cadastrar novo usuário, e email não deve ser duplicado',
+  //   type: CreateUserDto,
+  // })
   @ApiResponse({
     status: 201,
     description: 'Usuário criado com sucesso',
@@ -100,6 +92,9 @@ export class UsersController {
   }
 
   @Patch(':id/password')
+  @ApiOperation({
+    summary: 'Rota para fazer alteração de senha',
+  })
   @ApiResponse({
     status: 400,
     description: 'Usuário não encontrado',
@@ -114,7 +109,17 @@ export class UsersController {
   async changePassword(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() dto: ChangePasswordDto,
-  ): Promise<{ message: string }> {
+    @Req() req: AuthRequest,
+  ): Promise<any> {
+    const userId = req.user?.id;
+    const admin = req.user?.admin;
+
+    if (userId !== id && !admin) {
+      throw new ForbiddenException(
+        'User not authenticated to change password for this user',
+      );
+    }
+
     await this.usersService.changePassword(id, dto);
     return { message: 'Senha atualizada com sucesso' };
   }

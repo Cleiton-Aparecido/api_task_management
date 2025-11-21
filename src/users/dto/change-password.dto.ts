@@ -14,6 +14,6 @@ export class ChangePasswordDto {
     example: '654321',
   })
   @IsString()
-  @MinLength(8, { message: 'A nova senha deve ter no mínimo 8 caracteres.' })
+  @MinLength(6, { message: 'A senha deve ter no mínimo 6 caracteres.' })
   newPassword!: string;
 }

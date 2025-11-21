@@ -20,14 +20,14 @@ export class UsersService implements UsersUseCase {
     createUserDto: CreateUserDto,
   ): Promise<{ statusCode: number; message: string }> {
     try {
-      const { email, name, password } = createUserDto;
+      const { email, name, password, admin } = createUserDto;
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      const userExists = await this.usersRepository.findOne({ email });
-      if (userExists) {
-        throw new ConflictException('E-mail já cadastrado');
-      }
+      // const userExists = await this.usersRepository.findOne({ email });
+      // if (userExists) {
+      //   throw new ConflictException('E-mail já cadastrado');
+      // }
 
       const userCreated = this.usersRepository.create({
         email,
@@ -35,6 +35,11 @@ export class UsersService implements UsersUseCase {
         password: hashedPassword,
       });
       await this.usersRepository.save(userCreated);
+
+      console.log(userCreated);
+
+      if (admin) {
+      }
 
       return {
         statusCode: 201,
