@@ -1,3 +1,3 @@
 export abstract class PermissionUseCase {
-  abstract createAdmin(data: any): Promise<any>;
+  abstract createAdmin(data: string, admin?: boolean): Promise<any>;
 }

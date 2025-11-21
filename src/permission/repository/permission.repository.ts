@@ -10,12 +10,40 @@ import { UserPermission } from 'src/config/entities/user-permission.entity';
 export class PermissionRepository implements IPermissionRepository {
   constructor(
     @InjectRepository(Permission)
-    private readonly PermissionRepository: Repository<Permission>,
+    private readonly permissionRepository: Repository<Permission>,
     @InjectRepository(UserPermission)
-    private readonly UserPermissionRepository: Repository<UserPermission>,
+    private readonly userPermissionRepository: Repository<UserPermission>,
   ) {}
 
+  private buildWhere(
+    partial: Partial<Permission>,
+  ): FindOptionsWhere<Permission> {
+    const { feeds, deletedAt, ...rest } = partial as any;
+    const where: any = {};
+    Object.entries(rest).forEach(([key, value]) => {
+      if (value === undefined || value === null || typeof value === 'object')
+        return;
+      where[key] = value;
+    });
+
+    if (deletedAt === null) {
+      where.deletedAt = IsNull();
+    } else if (deletedAt instanceof Date) {
+      where.deletedAt = deletedAt;
+    }
+
+    return where as FindOptionsWhere<Permission>;
+  }
+
   async find(where: Partial<any>): Promise<any | null> {
-    return this.PermissionRepository.findOne({ where });
+    return this.permissionRepository.findOne({ where });
+  }
+
+  async save(user: DeepPartial<UserPermission>): Promise<UserPermission> {
+    return this.userPermissionRepository.save(user);
+  }
+
+  async create(data: DeepPartial<UserPermission>): Promise<UserPermission> {
+    return this.userPermissionRepository.create(data);
   }
 }

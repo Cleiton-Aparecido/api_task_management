@@ -1,7 +1,8 @@
+import { UserPermission } from 'src/config/entities/user-permission.entity';
 import { DeepPartial } from 'typeorm';
 
 export abstract class IPermissionRepository {
   abstract find(partial: Partial<any>);
-  // abstract save(any: DeepPartial<any>): Promise<any>;
-  // abstract create(data: DeepPartial<any>): any;
+  abstract save(user: DeepPartial<UserPermission>): Promise<UserPermission>;
+  abstract create(data: DeepPartial<UserPermission>): Promise<UserPermission>;
 }

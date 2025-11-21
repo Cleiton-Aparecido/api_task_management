@@ -5,16 +5,19 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { UsersRepository } from '../repository/users.repository';
 import * as bcrypt from 'bcrypt';
-import { CreateUserDto } from '../dto/create-user.dto';
-import { UsersUseCase } from './users.usecase';
-import { IUsersRepository } from '../interfaces/users.repository.interface';
+import { PermissionUseCase } from 'src/permission/service/permission.usecase';
 import { ChangePasswordDto } from '../dto/change-password.dto';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { IUsersRepository } from '../interfaces/users.repository.interface';
+import { UsersUseCase } from './users.usecase';
 
 @Injectable()
 export class UsersService implements UsersUseCase {
-  constructor(private readonly usersRepository: IUsersRepository) {}
+  constructor(
+    private readonly usersRepository: IUsersRepository,
+    private readonly permissionService: PermissionUseCase,
+  ) {}
 
   async create(
     createUserDto: CreateUserDto,
@@ -24,22 +27,19 @@ export class UsersService implements UsersUseCase {
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      // const userExists = await this.usersRepository.findOne({ email });
-      // if (userExists) {
-      //   throw new ConflictException('E-mail já cadastrado');
-      // }
+      const userExists = await this.usersRepository.findOne({ email });
+      if (userExists) {
+        throw new ConflictException('E-mail já cadastrado');
+      }
 
       const userCreated = this.usersRepository.create({
         email,
         name,
         password: hashedPassword,
       });
-      await this.usersRepository.save(userCreated);
+      const user = await this.usersRepository.save(userCreated);
 
-      console.log(userCreated);
-
-      if (admin) {
-      }
+      this.permissionService.createAdmin(user.id, admin);
 
       return {
         statusCode: 201,

@@ -11,12 +11,11 @@ import {
   Post,
   Req,
 } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Public } from 'src/auth/decorators/public.decorator';
 import { ChangePasswordDto } from '../dto/change-password.dto';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UsersUseCase } from '../services/users.usecase';
-import { Admin } from 'typeorm';
 type AuthRequest = Request & {
   user?: { id: string; email: string; name?: string; admin?: boolean };
 };
@@ -31,10 +30,6 @@ export class UsersController {
   @ApiOperation({
     summary: 'cadastrar usuários',
   })
-  // @ApiBody({
-  //   description: 'Cadastrar novo usuário, e email não deve ser duplicado',
-  //   type: CreateUserDto,
-  // })
   @ApiResponse({
     status: 201,
     description: 'Usuário criado com sucesso',
@@ -64,11 +59,29 @@ export class UsersController {
     description: 'Consultar informações do usuário autenticado',
     schema: {
       example: {
-        id: '73f45c85-744b-41db-a570-19c2097631d5',
+        id: 'f7f8498a-a51d-44d8-bf3a-5d632d9d104c',
         name: 'user',
-        email: 'cleiton@email.com',
-        createdAt: '2025-10-25T16:30:16.000Z',
-        updatedAt: '2025-10-25T16:30:16.000Z',
+        email: 'cleiton1245@email.com',
+        createdAt: '2025-11-21T20:16:39.982Z',
+        updatedAt: '2025-11-21T20:16:39.982Z',
+        usersPermissions: [
+          {
+            id: '114881a6-dc0f-4714-b05b-bb0af6e4a3d2',
+            userId: 'f7f8498a-a51d-44d8-bf3a-5d632d9d104c',
+            permissionId: '63c54479-9f43-47b8-9d37-b4e60fb59fe4',
+            permission: {
+              id: '63c54479-9f43-47b8-9d37-b4e60fb59fe4',
+              name: 'ADMIN',
+              createdAt: '2025-11-21T17:48:28.976Z',
+              updatedAt: '2025-11-21T17:48:28.976Z',
+              deletedAt: null,
+            },
+            createdAt: '2025-11-21T20:16:40.009Z',
+            updatedAt: '2025-11-21T20:16:40.009Z',
+            deletedAt: null,
+          },
+        ],
+        permissions: ['ADMIN'],
       },
     },
   })

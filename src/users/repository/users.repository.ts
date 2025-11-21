@@ -51,17 +51,31 @@ export class UsersRepository implements IUsersRepository {
   }
 
   async save(user: DeepPartial<User>): Promise<User> {
-    return this.userRepository.save(user);
+    return await this.userRepository.save(user);
   }
 
   create(data: DeepPartial<User>): User {
     return this.userRepository.create(data);
   }
 
-  async findActiveById(id: string): Promise<User | null> {
-    return this.userRepository.findOne({
+  async findActiveById(id: string): Promise<any> {
+    const user = await this.userRepository.findOne({
       where: { id, deletedAt: IsNull() },
+      relations: {
+        usersPermissions: {
+          permission: true,
+        },
+      },
     });
+
+    if (!user) return null;
+
+    const permissions = user.usersPermissions.map((up) => up.permission.name);
+
+    return {
+      ...user,
+      permissions,
+    };
   }
 
   async findByEmail(email: string): Promise<User | null> {
