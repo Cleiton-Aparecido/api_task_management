@@ -8,6 +8,7 @@ import { PermissionModule } from './permission/permission.module';
 import { UsersService } from './users/services/users.service';
 import { UsersUseCase } from './users/services/users.usecase';
 import { UsersModule } from './users/users.module';
+import { TaskModule } from './task/task.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { UsersModule } from './users/users.module';
     AuthModule,
     UsersModule,
     PermissionModule,
+    TaskModule,
   ],
   providers: [
     {

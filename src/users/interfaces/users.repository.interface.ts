@@ -5,7 +5,7 @@ import { DeepPartial, FindOptionsWhere } from 'typeorm';
 export abstract class IUsersRepository {
   abstract findOne(partial: Partial<User>);
   abstract save(user: DeepPartial<User>): Promise<User>;
-  abstract create(data: DeepPartial<User>): User;
+  abstract create(data: DeepPartial<User>): Promise<User>;
   abstract findActiveById(id: string);
   abstract findByEmail(email: string);
   abstract findActiveByIdWithPassword(id: string): Promise<User | null>;

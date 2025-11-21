@@ -32,7 +32,7 @@ export class UsersService implements UsersUseCase {
         throw new ConflictException('E-mail já cadastrado');
       }
 
-      const userCreated = this.usersRepository.create({
+      const userCreated = await this.usersRepository.create({
         email,
         name,
         password: hashedPassword,

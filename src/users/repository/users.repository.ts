@@ -54,8 +54,8 @@ export class UsersRepository implements IUsersRepository {
     return await this.userRepository.save(user);
   }
 
-  create(data: DeepPartial<User>): User {
-    return this.userRepository.create(data);
+  async create(data: DeepPartial<User>): Promise<User> {
+    return await this.userRepository.create(data);
   }
 
   async findActiveById(id: string): Promise<any> {
