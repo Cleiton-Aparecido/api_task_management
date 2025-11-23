@@ -38,7 +38,23 @@ export class TaskRepository implements ITaskRepository {
 
   async find(data: Task): Promise<Task | any> {
     const where = this.buildWhere(data);
-    return await this.taskRepository.findBy({ ...where, deletedAt: IsNull() });
+
+    return this.taskRepository
+      .createQueryBuilder('task')
+      .leftJoin('task.user', 'user')
+      .select([
+        'task.id AS id',
+        'task.title AS title',
+        'task.description AS description',
+        'task.createdAt AS "createdAt"',
+        'task.updatedAt AS "updatedAt"',
+        'user.name AS "userName"',
+      ])
+      .where({
+        ...where,
+        deletedAt: IsNull(),
+      })
+      .getRawMany();
   }
   async update(data: Task, update: Partial<Task>): Promise<Task | any> {
     const where = this.buildWhere(data);
