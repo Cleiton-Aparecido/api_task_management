@@ -19,7 +19,7 @@ export class CreateTaskDto {
   })
   @IsNotEmpty({ message: 'O campo title não pode ser vazio' })
   @IsDefined({ message: 'O campo name é obrigatório' })
-  @MaxLength(50, { message: 'O nome deve ter no máximo 50 caracteres' })
+  @MaxLength(500, { message: 'O nome deve ter no máximo 500 caracteres' })
   description: string;
 }
 
